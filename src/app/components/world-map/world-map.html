@@ -673,18 +673,32 @@
             <div class="w-[50px] h-[60px] flex flex-col items-center justify-center animate-in zoom-in duration-300">
                 <div class="relative cursor-pointer pointer-events-auto hover:scale-110 transition-transform origin-bottom"
                     (click)="clickOverlay(overlay, $event)">
+
+                    <!-- Global Top 1 Crown -->
+                    <div *ngIf="overlay.isTopOne"
+                        class="absolute -top-[14px] left-1/2 transform -translate-x-1/2 flex justify-center w-full z-10 animate-[bounce_2s_infinite]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#facc15" stroke="#ca8a04"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                            class="drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
+                            <path d="M4 14l2-8 3 4 3-6 3 6 3-4 2 8H4z" />
+                            <rect x="4" y="16" width="16" height="2" />
+                        </svg>
+                    </div>
+
                     <img *ngIf="overlay.owner.avatarUrl" [src]="overlay.owner.avatarUrl"
-                        class="w-6 h-6 rounded-full border-[1.5px] border-[#1effc8] object-cover bg-zinc-800 shadow-[0_0_10px_rgba(30,255,200,0.8)]">
+                        class="w-6 h-6 rounded-full border-[1.5px] border-[#1effc8] object-cover bg-zinc-800 shadow-[0_0_10px_rgba(30,255,200,0.8)] relative z-0"
+                        [ngClass]="{'border-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.8)]': overlay.isTopOne}">
                     <div *ngIf="!overlay.owner.avatarUrl"
-                        class="w-6 h-6 rounded-full border-[1.5px] border-[#1effc8] bg-black text-[#1effc8] flex items-center justify-center font-bold text-[10px] shadow-[0_0_10px_rgba(30,255,200,0.8)]">
+                        class="w-6 h-6 rounded-full border-[1.5px] border-[#1effc8] bg-black text-[#1effc8] flex items-center justify-center font-bold text-[10px] shadow-[0_0_10px_rgba(30,255,200,0.8)] relative z-0"
+                        [ngClass]="{'border-yellow-400 text-yellow-400 shadow-[0_0_12px_rgba(250,204,21,0.8)]': overlay.isTopOne}">
                         {{ overlay.owner.name.charAt(0) }}</div>
 
-                    <div
-                        class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-md rounded border border-white/20 px-1 py-[1px] text-[6px] font-black tracking-widest text-[#1effc8] shadow-md">
+                    <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-md rounded border border-white/20 px-1 py-[1px] text-[6px] font-black tracking-widest text-[#1effc8] shadow-md z-10"
+                        [ngClass]="{'text-yellow-400 border-yellow-400/50': overlay.isTopOne}">
                         ${{ overlay.price }}</div>
                 </div>
-                <div
-                    class="mt-2.5 bg-black/80 backdrop-blur-sm px-1 py-[1px] rounded text-white text-[5px] font-bold tracking-wider max-w-full truncate pointer-events-none border border-white/10 uppercase">
+                <div class="mt-2.5 bg-black/80 backdrop-blur-sm px-1 py-[1px] rounded text-white text-[5px] font-bold tracking-wider max-w-full truncate pointer-events-none border border-white/10 uppercase"
+                    [ngClass]="{'text-yellow-400 border-yellow-400/30': overlay.isTopOne}">
                     {{ overlay.owner.name }}</div>
             </div>
 

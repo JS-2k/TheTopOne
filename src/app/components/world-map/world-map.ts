@@ -10,6 +10,7 @@ export interface OverlayData {
     y: number;
     owner: Bid;
     price: number;
+    isTopOne?: boolean;
 }
 
 export interface PromotionEvent {
@@ -237,7 +238,8 @@ export class WorldMapComponent {
                                 x: bbox.x + bbox.width / 2,
                                 y: bbox.y + bbox.height / 2,
                                 owner: data.currentOwner,
-                                price: data.currentPrice
+                                price: data.currentPrice,
+                                isTopOne: id === topOneId
                             });
                         }
                     }
