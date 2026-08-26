@@ -12,6 +12,15 @@ export interface OverlayData {
     price: number;
 }
 
+export interface PromotionEvent {
+    countryId: string;
+    countryName: string;
+    x: number;
+    y: number;
+    bid: Bid;
+    state: 'pulse' | 'card' | 'minimized';
+}
+
 @Component({
     selector: 'app-world-map',
     standalone: true,
@@ -46,10 +55,21 @@ export class WorldMapComponent {
 
     overlays = signal<OverlayData[]>([]);
 
+    // Live Promotion Event State
+    activePromotion = signal<PromotionEvent | null>(null);
+
     constructor() {
         effect(() => {
             const ownership = this.ownershipInfo();
             this.recalculateOverlays(ownership);
+        }, { allowSignalWrites: true });
+
+        // Listen for live promotion events
+        effect(() => {
+            const victory = this.mapService.victorySignal();
+            if (victory) {
+                setTimeout(() => this.triggerPromotion(victory.countryId, victory.bid), 100);
+            }
         }, { allowSignalWrites: true });
     }
 
@@ -58,11 +78,69 @@ export class WorldMapComponent {
         setTimeout(() => this.recalculateOverlays(this.ownershipInfo()), 300);
     }
 
+    triggerPromotion(countryId: string, bid: Bid) {
+        const svgMap = document.getElementById('world-map') as any as SVGSVGElement;
+        if (!svgMap) return;
+        const el = svgMap.querySelector(`#${countryId}`) as SVGGraphicsElement;
+        if (!el) return;
+        let bbox;
+        try { bbox = el.getBBox(); } catch (e) { return; }
+
+        if (bbox.width > 0) {
+            this.activePromotion.set({
+                countryId,
+                countryName: countryId.toUpperCase(),
+                x: bbox.x + bbox.width / 2,
+                y: bbox.y + bbox.height / 2,
+                bid,
+                state: 'pulse'
+            });
+
+            // Transition to card Phase
+            setTimeout(() => {
+                const current = this.activePromotion();
+                if (current && current.countryId === countryId) {
+                    this.activePromotion.update(p => p ? { ...p, state: 'card' } : p);
+                }
+            }, 1200);
+
+            // Transition to minimized Phase
+            setTimeout(() => {
+                const current = this.activePromotion();
+                if (current && current.countryId === countryId && current.state === 'card') {
+                    this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
+                }
+            }, 7200);
+        }
+    }
+
+    reopenPromotion() {
+        this.activePromotion.update(p => p ? { ...p, state: 'card' } : p);
+
+        // Auto minimize again
+        setTimeout(() => {
+            const current = this.activePromotion();
+            if (current && current.state === 'card') {
+                this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
+            }
+        }, 5000);
+    }
+
     private recalculateOverlays(ownership: Map<string, CountryOwnership>) {
         // Apply owned styles to SVG mapping outside of angular context loop
         setTimeout(() => {
             const svgMap = document.getElementById('world-map') as any as SVGSVGElement;
             if (!svgMap) return;
+
+            let topOneId: string | null = null;
+            let highestAmount = -1;
+
+            ownership.forEach((data, id) => {
+                if (data.currentOwner && data.currentOwner.amount > highestAmount) {
+                    highestAmount = data.currentOwner.amount;
+                    topOneId = id;
+                }
+            });
 
             const newOverlays: OverlayData[] = [];
 
@@ -70,10 +148,17 @@ export class WorldMapComponent {
                 if (data.currentOwner) {
                     const el = svgMap.querySelector(`#${id}`) as SVGGraphicsElement;
                     if (el) {
-                        if (!el.classList.contains('owned-country')) {
-                            el.classList.add('owned-country');
+                        if (id === topOneId) {
+                            el.classList.add('top-one-country');
+                            el.classList.remove('owned-country');
+                        } else {
+                            if (!el.classList.contains('owned-country')) {
+                                el.classList.add('owned-country');
+                            }
+                            el.classList.remove('top-one-country');
                         }
-                        if (data.currentOwner.color) {
+
+                        if (data.currentOwner.color && id !== topOneId) {
                             el.style.setProperty('--owned-color', data.currentOwner.color);
                         }
 

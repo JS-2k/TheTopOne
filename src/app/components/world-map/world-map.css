@@ -52,3 +52,46 @@
     fill: var(--owned-color, #ff4d79);
     filter: drop-shadow(0 0 15px var(--owned-color, #ff4d79));
 }
+
+/* Overall #1 Global Leader */
+.onyx-theme #world-map path.top-one-country,
+.onyx-theme #world-map g.top-one-country path {
+    fill: #facc15 !important;
+    stroke: #ffffff !important;
+    animation: goldShine 1.5s infinite alternate !important;
+}
+
+@keyframes goldShine {
+    0% {
+        filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.4));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 25px rgba(250, 204, 21, 1));
+    }
+}
+
+/* Promotion Event Animations */
+@keyframes radarWave {
+    0% {
+        transform: scale(0.1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes spark {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(var(--tx, 30px), var(--ty, -60px)) scale(0);
+        opacity: 0;
+    }
+}
