@@ -1,0 +1,39 @@
+<div
+    class="w-full bg-[#1effc8] text-black text-[9px] md:text-[11px] font-black uppercase tracking-[0.2em] overflow-hidden whitespace-nowrap py-1.5 flex items-center shadow-[0_0_15px_rgba(30,255,200,0.3)] relative z-[60]">
+    <div class="animate-marquee flex gap-12 min-w-max shrink-0">
+        <span class="flex items-center gap-12">
+            <span>Promote your Product to the World</span> •
+            <span>Become #1 in a Location</span> •
+            <span>Link your Social Media</span> •
+            <span>Dominate the Global Leaderboard</span> •
+            <span>Outbid your Rivals</span>
+        </span>
+        <span class="flex items-center gap-12 pl-12">
+            <span>Promote your Product to the World</span> •
+            <span>Become #1 in a Location</span> •
+            <span>Link your Social Media</span> •
+            <span>Dominate the Global Leaderboard</span> •
+            <span>Outbid your Rivals</span>
+        </span>
+    </div>
+</div>
+
+<header class="flex items-center justify-between py-3 px-6 md:px-12 bg-transparent text-white relative z-50">
+    <div class="flex items-center gap-6">
+        <div
+            class="text-xs md:text-sm font-bold tracking-[0.3em] uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-white/50 select-none drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+            <a routerLink="/">THETOPONE</a>
+        </div>
+
+        <div class="flex items-center gap-2 px-3 py-1 bg-[#1effc8]/10 border border-[#1effc8]/20 rounded-full">
+            <div class="w-1.5 h-1.5 rounded-full bg-[#1effc8] shadow-[0_0_8px_rgba(30,255,200,1)] animate-pulse"></div>
+            <span class="text-[10px] font-bold text-[#1effc8] tracking-[0.2em] uppercase">{{ visitors() | number }}
+                LIVE</span>
+        </div>
+    </div>
+
+    <nav class="flex items-center gap-8 text-[11px] md:text-[12px] font-bold tracking-[0.2em] uppercase text-zinc-400">
+        <a routerLink="/" class="hover:text-white transition-colors duration-300">Map</a>
+        <a routerLink="/about" class="hover:text-white transition-colors duration-300">About</a>
+    </nav>
+</header>

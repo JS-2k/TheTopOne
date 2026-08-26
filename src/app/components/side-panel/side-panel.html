@@ -1,0 +1,251 @@
+<div class="side-panel-overlay fixed inset-0 z-40 transition-opacity duration-300"
+    [class.opacity-0]="!selectedCountryId()" [class.pointer-events-none]="!selectedCountryId()" (click)="closePanel()">
+</div>
+
+<div class="side-panel fixed right-4 top-24 bottom-4 w-[420px] bg-[#0b0c10] border border-[#1effc8]/30 rounded-2xl z-50 transform transition-all duration-300 shadow-[0_0_50px_rgba(30,255,200,0.15)] flex flex-col font-sans"
+    [class.translate-x-[120%]]="!selectedCountryId()" [class.translate-x-0]="selectedCountryId()">
+
+    <div class="flex-1 overflow-y-auto custom-scrollbar p-6" *ngIf="countryData() as data">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-2 text-yellow-400 font-bold uppercase tracking-widest text-sm">
+                <!-- Crown SVG -->
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 14l2-8 3 4 3-6 3 6 3-4 2 8H4z" />
+                    <rect x="4" y="16" width="16" height="2" />
+                </svg>
+                <span>#1 In {{ data.countryId }}</span>
+            </div>
+            <button class="text-zinc-500 hover:text-white transition-colors" (click)="closePanel()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <ng-container *ngIf="data.currentOwner; else unowned">
+            <!-- Profile Info -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="relative w-20 h-20 rounded-full border-2 border-[#1effc8] p-1 shadow-[0_0_20px_rgba(30,255,200,0.4)]">
+                        <img *ngIf="data.currentOwner.avatarUrl" [src]="data.currentOwner.avatarUrl"
+                            class="w-full h-full rounded-full object-cover">
+                        <div *ngIf="!data.currentOwner.avatarUrl"
+                            class="w-full h-full rounded-full bg-zinc-800 flex items-center justify-center text-xl font-black text-[#1effc8]">
+                            {{ data.currentOwner.name.charAt(0) }}
+                        </div>
+                    </div>
+                    <div class="text-white font-bold text-lg flex flex-col justify-center">
+                        <div class="flex items-center gap-1.5">
+                            {{ data.currentOwner.name }}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#3b82f6">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right flex flex-col justify-center h-20">
+                    <div
+                        class="text-[#1effc8] font-black text-4xl mb-0.5 drop-shadow-[0_0_10px_rgba(30,255,200,0.4)] leading-none mt-1">
+                        \${{ data.currentPrice.toFixed(0) }}
+                    </div>
+                    <div class="text-[9px] text-zinc-500 uppercase tracking-widest font-medium">Highest Bid</div>
+                </div>
+            </div>
+
+            <!-- Promotion Text -->
+            <div class="mb-6">
+                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mb-3">My Promotion</div>
+                <div class="text-zinc-300 text-[13px] italic leading-relaxed">
+                    "{{ data.currentOwner.message || 'Taking over the map.' }}"
+                </div>
+            </div>
+
+            <!-- Promotion Banner -->
+            <div
+                class="mb-8 relative rounded-xl overflow-hidden group cursor-pointer border border-[#1effc8]/20 bg-gradient-to-r from-[#170e2b] via-[#210931] to-black h-32 flex flex-col justify-center px-6">
+                <!-- Generic futuristic background effects -->
+                <div
+                    class="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay mix-blend-screen">
+                </div>
+                <div
+                    class="absolute inset-0 opacity-20 bg-gradient-to-tr from-[#1effc8]/30 to-transparent mix-blend-screen pointer-events-none">
+                </div>
+                <div class="relative z-10">
+                    <h3 class="text-2xl font-black text-white uppercase tracking-wider mb-1 drop-shadow-lg">{{
+                        data.currentOwner.name }}<br><span class="text-xs text-white/50 tracking-[0.4em]">THE NEXT
+                            GENERATION</span></h3>
+                    <p class="text-[10px] text-zinc-300 uppercase tracking-widest mb-3"
+                        *ngIf="data.currentOwner.promoteText">{{ data.currentOwner.promoteText }}</p>
+                    <a *ngIf="data.currentOwner.promoteUrl" [href]="data.currentOwner.promoteUrl" target="_blank"
+                        class="inline-block bg-[#1effc8] text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform mt-2">
+                        Visit Website
+                    </a>
+                </div>
+            </div>
+
+            <!-- Product / Course CTA -->
+            <a *ngIf="data.currentOwner.productLinkUrl" [href]="data.currentOwner.productLinkUrl" target="_blank"
+                class="w-full bg-gradient-to-r from-[#1effc8]/10 to-transparent border border-[#1effc8]/30 hover:border-[#1effc8] transition-all rounded-xl p-4 flex items-center justify-between group mb-8 shadow-[0_0_15px_rgba(30,255,200,0.05)] cursor-pointer">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-[#1effc8]/20 flex items-center justify-center text-[#1effc8] group-hover:scale-110 transition-transform shadow-[0_0_10px_rgba(30,255,200,0.3)]">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[9px] font-bold text-[#1effc8]/70 uppercase tracking-widest mb-0.5 mt-0.5">
+                            Exclusive Offer</div>
+                        <div class="text-[13px] font-black text-white uppercase tracking-wider">{{
+                            data.currentOwner.productLinkText || 'Get My Course' }}</div>
+                    </div>
+                </div>
+                <div
+                    class="text-[#1effc8] opacity-50 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Connections -->
+            <div class="mb-8">
+                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mb-4">Connect With Me</div>
+                <div class="flex gap-4">
+                    <a *ngIf="data.currentOwner.promoteUrl" [href]="data.currentOwner.promoteUrl" target="_blank"
+                        class="flex flex-col items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-full border border-white/10 bg-[#13151a] flex items-center justify-center text-zinc-400 group-hover:border-[#1effc8] group-hover:text-[#1effc8] transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71m-2.83 2.83a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-[9px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest">Website</span>
+                    </a>
+                    <a *ngIf="data.currentOwner.instagram" [href]="data.currentOwner.instagram" target="_blank"
+                        class="flex flex-col items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-full border border-white/10 bg-[#13151a] flex items-center justify-center text-zinc-400 group-hover:border-[#1effc8] transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                class="group-hover:text-pink-500" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </div>
+                        <span
+                            class="text-[9px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest">Instagram</span>
+                    </a>
+                    <a *ngIf="data.currentOwner.x" [href]="data.currentOwner.x" target="_blank"
+                        class="flex flex-col items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-full border border-white/10 bg-[#13151a] flex items-center justify-center text-zinc-400 group-hover:border-[#1effc8] group-hover:text-white transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                            </svg>
+                        </div>
+                        <span class="text-[9px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest">X
+                            (Twitter)</span>
+                    </a>
+                    <a *ngIf="data.currentOwner.linkedin" [href]="data.currentOwner.linkedin" target="_blank"
+                        class="flex flex-col items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-full border border-white/10 bg-[#13151a] flex items-center justify-center text-zinc-400 group-hover:border-[#1effc8] group-hover:text-[#0077b5] transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-[9px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest">LinkedIn</span>
+                    </a>
+                    <a *ngIf="data.currentOwner.youtube" [href]="data.currentOwner.youtube" target="_blank"
+                        class="flex flex-col items-center gap-2 group">
+                        <div
+                            class="w-10 h-10 rounded-full border border-white/10 bg-[#13151a] flex items-center justify-center text-zinc-400 group-hover:border-[#1effc8] group-hover:text-red-500 transition-colors">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                        </div>
+                        <span
+                            class="text-[9px] text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest">YouTube</span>
+                    </a>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-template #unowned>
+            <div class="text-center py-12 flex flex-col items-center">
+                <div
+                    class="w-24 h-24 rounded-full border-2 border-dashed border-[#1effc8]/40 flex items-center justify-center mb-6">
+                    <span class="text-[#1effc8]/40 text-4xl font-black">?</span>
+                </div>
+                <div class="text-white/40 mb-2 font-mono uppercase tracking-[0.2em] text-[10px]">Status: No Leader</div>
+                <div class="text-[#1effc8] font-black tracking-wider text-xl">Spotlight Available</div>
+            </div>
+        </ng-template>
+
+        <!-- Dynamic CTA Button matching screenshot -->
+        <button
+            class="w-full bg-[#0b0c10] border-2 border-[#1effc8] text-[#1effc8] py-3.5 rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(30,255,200,0.15)] transition-all transform hover:scale-[1.02] flex justify-center items-center gap-2 group mb-3"
+            (click)="openBidding()">
+            OUTBID \${{ data.currentPrice.toFixed(0) }} <span class="group-hover:animate-pulse">⚡</span>
+        </button>
+        <div class="text-[10px] text-zinc-500 text-center mb-10">Be the next #1 in {{ data.countryId }}</div>
+
+        <!-- History -->
+        <div *ngIf="data.history.length">
+            <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mb-4">Recent Bids</div>
+            <div class="space-y-4">
+                <div *ngFor="let owner of data.history"
+                    class="flex items-center justify-between pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                    <div class="flex items-center gap-3">
+                        <img *ngIf="owner.avatarUrl" [src]="owner.avatarUrl"
+                            class="w-8 h-8 rounded-full border border-[#1effc8] object-cover">
+                        <div *ngIf="!owner.avatarUrl"
+                            class="w-8 h-8 rounded-full border border-[#1effc8] flex items-center justify-center bg-zinc-800 text-white font-bold text-[10px] uppercase">
+                            {{ owner.name.charAt(0) }}</div>
+                        <div class="text-[12px] font-bold text-zinc-300">{{ owner.name }}</div>
+                    </div>
+                    <div class="text-[12px] font-black text-[#1effc8]">\${{ owner.amount }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(30, 255, 200, 0.5);
+    }
+</style>
+
+<!-- Embedded Bidding Form -->
+<app-bidding-form *ngIf="showBiddingForm" (close)="closeBidding()" [countryId]="selectedCountryId()"></app-bidding-form>

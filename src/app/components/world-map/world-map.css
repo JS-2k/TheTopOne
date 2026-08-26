@@ -1,0 +1,54 @@
+.map-container {
+    padding: 2rem;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#world-map path {
+    fill: #333333;
+    stroke: #1a1a1a;
+    stroke-width: 0.5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#world-map path:hover {
+    fill: #555555;
+    stroke: #ffffff;
+}
+
+/* Onyx & Neon Theme Highlights */
+.onyx-theme #world-map path {
+    fill: #222222;
+    stroke: #111111;
+}
+
+.onyx-theme #world-map path:hover {
+    fill: #444444;
+    stroke: #1effc8;
+    /* Neon Cyan */
+    filter: drop-shadow(0 0 8px rgba(30, 255, 200, 0.5));
+}
+
+/* Selected state */
+/* Selected state */
+.onyx-theme #world-map path.selected-country,
+.onyx-theme #world-map g.selected-country path {
+    fill: #1effc8;
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 12px rgba(30, 255, 200, 0.8));
+}
+
+/* Later to be used if country is owned */
+.onyx-theme #world-map path.owned-country,
+.onyx-theme #world-map g.owned-country path {
+    fill: var(--owned-color, #ff2a5f);
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 10px var(--owned-color, #ff2a5f));
+}
+
+.onyx-theme #world-map path.owned-country:hover,
+.onyx-theme #world-map g.owned-country:hover path {
+    fill: var(--owned-color, #ff4d79);
+    filter: drop-shadow(0 0 15px var(--owned-color, #ff4d79));
+}

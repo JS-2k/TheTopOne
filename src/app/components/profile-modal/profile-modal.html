@@ -1,0 +1,87 @@
+@if (uiService.isProfileModalOpen() && uiService.selectedBid()) {
+<div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
+    <div class="absolute inset-0 cursor-pointer" (click)="uiService.closeProfile()"></div>
+
+    <div
+        class="relative z-10 w-full max-w-sm bg-[#09090b] border border-white/10 p-10 shadow-[0_0_80px_rgba(0,0,0,1)] animate-in zoom-in-[0.98] duration-300 flex flex-col items-center text-center rounded-3xl my-8">
+
+        <!-- Close button -->
+        <button (click)="uiService.closeProfile()"
+            class="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors z-30">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </button>
+
+        <!-- Avatar -->
+        <div class="w-24 h-24 rounded-full border-2 border-white/10 flex items-center justify-center bg-black/50 overflow-hidden shadow-[0_0_40px_rgba(34,211,238,0.15)] mb-6 relative z-30 group-hover:border-white/30 transition-all p-1"
+            [class.!border-cyan-400]="uiService.selectedBid()?.rank === 1"
+            [class.!shadow-[0_0_40px_rgba(34,211,238,0.5)]]="uiService.selectedBid()?.rank === 1">
+            <div class="w-full h-full rounded-full overflow-hidden bg-white/5 flex items-center justify-center">
+                @if (uiService.selectedBid()?.avatarUrl) {
+                <img [src]="uiService.selectedBid()?.avatarUrl" class="w-full h-full object-cover">
+                } @else {
+                <span class="text-3xl font-bold text-white uppercase leading-none drop-shadow-md">
+                    {{ getInitials(uiService.selectedBid()?.name || uiService.selectedBid()?.handle || '?') }}
+                </span>
+                }
+            </div>
+        </div>
+
+        <!-- Identity -->
+        <h2 class="text-2xl font-bold tracking-tight text-white mb-1.5 relative z-30"
+            [class.text-transparent]="uiService.selectedBid()?.rank === 1"
+            [class.bg-clip-text]="uiService.selectedBid()?.rank === 1"
+            [class.bg-gradient-to-r]="uiService.selectedBid()?.rank === 1"
+            [class.from-cyan-400]="uiService.selectedBid()?.rank === 1"
+            [class.to-indigo-400]="uiService.selectedBid()?.rank === 1">{{ uiService.selectedBid()?.name }}</h2>
+
+        <p class="text-[13px] font-mono font-medium text-zinc-500 mb-8 tracking-wider relative z-30 opacity-80">{{
+            uiService.selectedBid()?.handle }}</p>
+
+        <!-- Message -->
+        @if (uiService.selectedBid()?.message) {
+        <p class="text-[15px] font-medium text-zinc-300 italic mb-8 px-6 leading-relaxed relative z-30">
+            "{{ uiService.selectedBid()?.message }}"
+        </p>
+        }
+
+        <!-- Promotion Section -->
+        @if (uiService.selectedBid()?.promoteText || uiService.selectedBid()?.promoteUrl) {
+        <div class="w-full mb-8 pb-8 border-b border-white/5 flex flex-col items-center gap-4 relative z-30">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-indigo-400 font-bold flex items-center gap-1.5">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path
+                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71m-2.83 2.83a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg> Promoting
+            </span>
+            @if (uiService.selectedBid()?.promoteText) {
+            <span class="text-[15px] font-bold text-white leading-snug">
+                {{ uiService.selectedBid()?.promoteText }}
+            </span>
+            }
+            @if (uiService.selectedBid()?.promoteUrl) {
+            <button (click)="visitPromotion()"
+                class="flex items-center gap-2 text-indigo-100 bg-indigo-500/10 border border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-400/50 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] px-6 py-2.5 rounded-full transition-all mt-2 text-[12px] uppercase tracking-widest font-bold group">
+                Explore Promo <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    class="group-hover:translate-x-0.5 transition-transform stroke-indigo-100 stroke-2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+            }
+        </div>
+        }
+
+        <button (click)="visitProfile()"
+            class="w-full relative z-30 bg-transparent border border-white/20 text-white py-4.5 h-14 text-[13px] uppercase tracking-[0.2em] font-bold hover:bg-white hover:text-black transition-all rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.01)] flex items-center justify-center gap-3 overflow-hidden group">
+            <span class="relative z-10 flex items-center justify-center gap-3">
+                Visit Profile <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" class="group-hover:translate-x-1 transition-transform opacity-70">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </span>
+        </button>
+    </div>
+</div>
+}
