@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   // Simulating active visitors to gamify the prestige of the platform
-  visitors = signal(Math.floor(Math.random() * 5001));
+  visitors = signal(Math.floor(Math.random() * 950) + 12);
 
   constructor() {
     setInterval(() => {
@@ -18,8 +18,8 @@ export class HeaderComponent {
       const diff = Math.floor(Math.random() * 5) - 1; // +3 to -1 occasionally
       this.visitors.update(v => {
         let next = v + diff;
-        if (next < 0) next = 0;
-        if (next > 5000) next = 5000;
+        if (next < 1) next = 1;
+        if (next > 999) next = 999;
         return next;
       });
     }, 4000);
