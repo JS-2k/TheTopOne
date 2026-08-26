@@ -87,14 +87,20 @@ export class WorldMapComponent {
         }, 2000);
     }
 
-    private smoothPanCamera(targetX: number, targetY: number) {
+    private smoothPanCamera(targetX: number, targetY: number, targetW?: number, targetH?: number) {
         const startX = this.viewBoxX();
         const startY = this.viewBoxY();
-        const dist = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2));
+        const startW = this.viewBoxW();
+        const startH = this.viewBoxH();
+
+        const finalW = targetW ?? startW;
+        const finalH = targetH ?? startH;
+
+        const dist = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2) + Math.pow(finalW - startW, 2));
         if (dist < 1) return;
 
         let startTime: number | null = null;
-        const duration = 1200; // 1.2 seconds, perfectly aligning with the Phase 2 card emergence!
+        const duration = 1500; // Extend duration slightly for a smoother cinematic sweep
 
         const step = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
@@ -105,6 +111,8 @@ export class WorldMapComponent {
 
             this.viewBoxX.set(startX + (targetX - startX) * ease);
             this.viewBoxY.set(startY + (targetY - startY) * ease);
+            this.viewBoxW.set(startW + (finalW - startW) * ease);
+            this.viewBoxH.set(startH + (finalH - startH) * ease);
 
             if (progress < 1) {
                 requestAnimationFrame(step);
@@ -134,10 +142,12 @@ export class WorldMapComponent {
                 state: 'pulse'
             });
 
-            // Pan the camera seamlessly so the popup (which rises ~250px above cy) is fully visible
-            const targetX = cx - this.viewBoxW() / 2;
-            const targetY = cy - 250 - (this.viewBoxH() * 0.2); // Offset UP heavily so the top card area rests deep inside the window
-            this.smoothPanCamera(targetX, targetY);
+            // Cinematic swooping pan inward: (Center at event, tighter bounds, approx 600 width)
+            const targetW = 600;
+            const targetH = 350;
+            const targetX = cx - targetW / 2;
+            const targetY = cy - 250 - (targetH * 0.2);
+            this.smoothPanCamera(targetX, targetY, targetW, targetH);
 
             // Transition to card Phase
             setTimeout(() => {
@@ -152,6 +162,9 @@ export class WorldMapComponent {
                 const current = this.activePromotion();
                 if (current && current.countryId === countryId && current.state === 'card') {
                     this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
+
+                    // Cinematic zoom back to global initial bounds (the whole world)
+                    this.smoothPanCamera(30.767, 241.591, 784.077, 458.627);
                 }
             }, 7200);
         }
@@ -161,9 +174,11 @@ export class WorldMapComponent {
         const current = this.activePromotion();
         if (current) {
             // Pan back to it!
-            const targetX = current.x - this.viewBoxW() / 2;
-            const targetY = current.y - 250 - (this.viewBoxH() * 0.2);
-            this.smoothPanCamera(targetX, targetY);
+            const targetW = 600;
+            const targetH = 350;
+            const targetX = current.x - targetW / 2;
+            const targetY = current.y - 250 - (targetH * 0.2);
+            this.smoothPanCamera(targetX, targetY, targetW, targetH);
 
             this.activePromotion.update(p => p ? { ...p, state: 'card' } : p);
 
@@ -172,6 +187,9 @@ export class WorldMapComponent {
                 const refreshed = this.activePromotion();
                 if (refreshed && refreshed.state === 'card') {
                     this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
+
+                    // Cinematic zoom back to global initial bounds (the whole world)
+                    this.smoothPanCamera(30.767, 241.591, 784.077, 458.627);
                 }
             }, 5000);
         }
