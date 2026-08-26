@@ -87,6 +87,32 @@ export class WorldMapComponent {
         }, 2000);
     }
 
+    private smoothPanCamera(targetX: number, targetY: number) {
+        const startX = this.viewBoxX();
+        const startY = this.viewBoxY();
+        const dist = Math.sqrt(Math.pow(targetX - startX, 2) + Math.pow(targetY - startY, 2));
+        if (dist < 1) return;
+
+        let startTime: number | null = null;
+        const duration = 1200; // 1.2 seconds, perfectly aligning with the Phase 2 card emergence!
+
+        const step = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+
+            // Ease out cubic
+            const ease = 1 - Math.pow(1 - progress, 3);
+
+            this.viewBoxX.set(startX + (targetX - startX) * ease);
+            this.viewBoxY.set(startY + (targetY - startY) * ease);
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+        requestAnimationFrame(step);
+    }
+
     triggerPromotion(countryId: string, bid: Bid) {
         const svgMap = document.getElementById('world-map') as any as SVGSVGElement;
         if (!svgMap) return;
@@ -96,14 +122,22 @@ export class WorldMapComponent {
         try { bbox = el.getBBox(); } catch (e) { return; }
 
         if (bbox.width > 0) {
+            const cx = bbox.x + bbox.width / 2;
+            const cy = bbox.y + bbox.height / 2;
+
             this.activePromotion.set({
                 countryId,
                 countryName: countryId.toUpperCase(),
-                x: bbox.x + bbox.width / 2,
-                y: bbox.y + bbox.height / 2,
+                x: cx,
+                y: cy,
                 bid,
                 state: 'pulse'
             });
+
+            // Pan the camera seamlessly so the popup (which rises ~250px above cy) is fully visible
+            const targetX = cx - this.viewBoxW() / 2;
+            const targetY = cy - 250 - (this.viewBoxH() * 0.2); // Offset UP heavily so the top card area rests deep inside the window
+            this.smoothPanCamera(targetX, targetY);
 
             // Transition to card Phase
             setTimeout(() => {
@@ -124,15 +158,23 @@ export class WorldMapComponent {
     }
 
     reopenPromotion() {
-        this.activePromotion.update(p => p ? { ...p, state: 'card' } : p);
+        const current = this.activePromotion();
+        if (current) {
+            // Pan back to it!
+            const targetX = current.x - this.viewBoxW() / 2;
+            const targetY = current.y - 250 - (this.viewBoxH() * 0.2);
+            this.smoothPanCamera(targetX, targetY);
 
-        // Auto minimize again
-        setTimeout(() => {
-            const current = this.activePromotion();
-            if (current && current.state === 'card') {
-                this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
-            }
-        }, 5000);
+            this.activePromotion.update(p => p ? { ...p, state: 'card' } : p);
+
+            // Auto minimize again
+            setTimeout(() => {
+                const refreshed = this.activePromotion();
+                if (refreshed && refreshed.state === 'card') {
+                    this.activePromotion.update(p => p ? { ...p, state: 'minimized' } : p);
+                }
+            }, 5000);
+        }
     }
 
     private recalculateOverlays(ownership: Map<string, CountryOwnership>) {
