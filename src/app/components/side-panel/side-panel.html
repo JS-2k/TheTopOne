@@ -211,7 +211,8 @@
             <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] mb-4">Recent Bids</div>
             <div class="space-y-4">
                 <div *ngFor="let owner of data.history"
-                    class="flex items-center justify-between pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                    class="flex items-center justify-between p-3 -mx-3 rounded-xl border border-transparent hover:bg-white/5 hover:border-white/10 cursor-pointer transition-colors"
+                    (click)="openProfile(owner)">
                     <div class="flex items-center gap-3">
                         <img *ngIf="owner.avatarUrl" [src]="owner.avatarUrl"
                             class="w-8 h-8 rounded-full border border-[#1effc8] object-cover">

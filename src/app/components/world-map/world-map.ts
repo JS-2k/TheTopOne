@@ -49,49 +49,58 @@ export class WorldMapComponent {
     constructor() {
         effect(() => {
             const ownership = this.ownershipInfo();
-            // Apply owned styles to SVG mapping outside of angular context loop
-            setTimeout(() => {
-                const svgMap = document.getElementById('world-map') as any as SVGSVGElement;
-                if (!svgMap) return;
+            this.recalculateOverlays(ownership);
+        }, { allowSignalWrites: true });
+    }
 
-                const newOverlays: OverlayData[] = [];
+    ngAfterViewInit() {
+        // Make absolutely sure overlays are placed once the huge SVG enters DOM
+        setTimeout(() => this.recalculateOverlays(this.ownershipInfo()), 300);
+    }
 
-                ownership.forEach((data, id) => {
-                    if (data.currentOwner) {
-                        const el = svgMap.querySelector(`#${id}`) as SVGGraphicsElement;
-                        if (el) {
-                            if (!el.classList.contains('owned-country')) {
-                                el.classList.add('owned-country');
-                            }
-                            if (data.currentOwner.color) {
-                                el.style.setProperty('--owned-color', data.currentOwner.color);
-                            }
+    private recalculateOverlays(ownership: Map<string, CountryOwnership>) {
+        // Apply owned styles to SVG mapping outside of angular context loop
+        setTimeout(() => {
+            const svgMap = document.getElementById('world-map') as any as SVGSVGElement;
+            if (!svgMap) return;
 
-                            // Determine visual center
-                            let bbox;
-                            try {
-                                bbox = el.getBBox();
-                            } catch (e) {
-                                // Fallback if not rendered
-                                bbox = { x: 0, y: 0, width: 0, height: 0 };
-                            }
+            const newOverlays: OverlayData[] = [];
 
-                            if (bbox.width > 0) {
-                                newOverlays.push({
-                                    countryId: id,
-                                    x: bbox.x + bbox.width / 2,
-                                    y: bbox.y + bbox.height / 2,
-                                    owner: data.currentOwner,
-                                    price: data.currentPrice
-                                });
-                            }
+            ownership.forEach((data, id) => {
+                if (data.currentOwner) {
+                    const el = svgMap.querySelector(`#${id}`) as SVGGraphicsElement;
+                    if (el) {
+                        if (!el.classList.contains('owned-country')) {
+                            el.classList.add('owned-country');
+                        }
+                        if (data.currentOwner.color) {
+                            el.style.setProperty('--owned-color', data.currentOwner.color);
+                        }
+
+                        // Determine visual center
+                        let bbox;
+                        try {
+                            bbox = el.getBBox();
+                        } catch (e) {
+                            // Fallback if not rendered
+                            bbox = { x: 0, y: 0, width: 0, height: 0 };
+                        }
+
+                        if (bbox.width > 0) {
+                            newOverlays.push({
+                                countryId: id,
+                                x: bbox.x + bbox.width / 2,
+                                y: bbox.y + bbox.height / 2,
+                                owner: data.currentOwner,
+                                price: data.currentPrice
+                            });
                         }
                     }
-                });
+                }
+            });
 
-                this.overlays.set(newOverlays);
-            }, 50);
-        }, { allowSignalWrites: true });
+            this.overlays.set(newOverlays);
+        }, 50);
     }
 
     onWheel(event: WheelEvent) {
@@ -220,11 +229,5 @@ export class WorldMapComponent {
         if (targetEl) {
             targetEl.classList.add('selected-country');
         }
-    }
-
-    // Angular AfterViewInit or similar to bind ownership colors
-    ngAfterViewInit() {
-        // TODO: subscribe to ownershipInfo and dynamically add classes 
-        // like .owned-country to paths that have owners.
     }
 }

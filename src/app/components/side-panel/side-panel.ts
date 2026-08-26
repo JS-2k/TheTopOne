@@ -1,7 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MapService } from '../../services/map.service';
+import { UiService } from '../../services/ui.service';
 import { BiddingFormComponent } from '../bidding-form/bidding-form';
+import { Bid } from '../../models/bid.model';
 
 @Component({
     selector: 'app-side-panel',
@@ -12,6 +14,7 @@ import { BiddingFormComponent } from '../bidding-form/bidding-form';
 })
 export class SidePanelComponent {
     private mapService = inject(MapService);
+    private uiService = inject(UiService);
 
     selectedCountryId = this.mapService.selectedCountryId;
 
@@ -34,5 +37,9 @@ export class SidePanelComponent {
 
     closeBidding() {
         this.showBiddingForm = false;
+    }
+
+    openProfile(bid: Bid) {
+        this.uiService.openProfile(bid);
     }
 }
