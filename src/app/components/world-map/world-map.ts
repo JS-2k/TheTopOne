@@ -76,6 +76,15 @@ export class WorldMapComponent {
     ngAfterViewInit() {
         // Make absolutely sure overlays are placed once the huge SVG enters DOM
         setTimeout(() => this.recalculateOverlays(this.ownershipInfo()), 300);
+
+        // SHOWCASE: Automatically trigger an animation 2 seconds after map loads so user can see it natively.
+        setTimeout(() => {
+            const data = this.mapService.getCountryOwnership('us'); // US dummy data
+            if (data && data.currentOwner) {
+                // Clear victory so we can re-trigger it safely if needed, or just call triggerPromotion directly
+                this.triggerPromotion('us', data.currentOwner);
+            }
+        }, 2000);
     }
 
     triggerPromotion(countryId: string, bid: Bid) {
